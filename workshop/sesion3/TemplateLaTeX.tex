@@ -1,0 +1,283 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%	COMANDOS DE USO EN LATEX	%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%  TIPOS DE DOCUMENTO
+%  ******************
+
+%  Artículo: \documentclass{article}
+%  Libro:    \documentclass{book}
+%  Carta:    \documentclass{letter}
+%  Reporte:  \doculemntclass{report}
+
+%  FORMATOS DE HOJA
+%  ****************
+
+%  Papel A4 : a4paper
+%  Carta    : letterpaper
+%  Papel A5 : a5paper
+%  Papel B5 : b5paper
+%  Ejecutivo: executivepaper
+%  Legal    : legalpaper
+
+%  TAMAÑO DE FUENTE
+%  ********************
+
+%  10pt, 11pt, 12pt
+
+%\documentclass[12pt,a4paper]{article}
+
+%  PAQUETES
+%  ********
+
+%  \usepackage{geometry}			% Para rehacer la geometría de la hoja
+%  \usepackage{amsmath}				% Para hacer símbolos matemáticos
+%  \usepackage{amssymb}				% Para hacer otro tipo de símbolos
+%  \usepackage{graphicx}			% Para insertar figuras
+%  \usepackage{wrapfig}				% Para insertar figuras dentro de un texto
+%  \usepackage{array}				% Para hacer matrices
+%  \usepackage{multirow}			% Para construir tablas
+%  \usepackage{multicol}			% Para escribir en varias columnas
+%  \usepackage{subcaption}			% Para captions de subfiguras
+%  \usepackage[utf8]{inputenc}
+%  \usepackage{lipsum}				% Para insertar texto random
+%  \usepackage[usenames,dvipsnames]{color}  	% Para escribir con colores
+%  \usepackage{color}
+%  \usepackage{import}
+
+
+%  TÍTULO
+%  ******
+
+%  \title{
+%	  Mi primer documento \LaTeX
+%  }
+
+%  \author{
+%		Bach. Luis Roberth Pérez Marcos %\\
+		%\thanks{Universidad Nacional de Trujillo - 
+		%\texttt{lperez@unitru.edu.pe}
+		%}\\
+		%Ph.D. Glenn C. Vidal Urquiza
+		%\thanks{Polytechnic University of Puerto Rico, USA -
+		%\texttt{gvidal@pupr.edu}
+		%}\\
+%   }
+
+%  \date{26 de Eenero, 2023}
+
+%\begin{document}
+
+%  \maketitle
+
+%  \renewcommand{\abstractname}{Resumen}
+
+%  \begin{abstract}
+%  \lipsum[1]
+%  \end{abstract}
+
+%  \newpage
+
+%  \tableofcontents
+
+%  \newpage
+
+%  \section{Redacción de texto}
+%  \label{Sección 1}
+%  \section*{Mi primera sección}
+%  \label{Sección 1}
+
+%  \lipsum[2]
+
+%       \subsection{Tamaño de letra}
+     % \subsection*{Tamaño de letra}
+
+% 	 \subsubsection{Tamaño tiny}
+	%  \subsubsection*{Tamaño tiny}
+% 	 {\tiny Este texto fue escrito con tamaño tiny}
+
+% 	 \subsubsection{Tamaño scriptsize}
+%  	{\scriptsize Este texto fue escrito con tamaño scriptsize}
+
+%	  \subsubsection{Tamaño footnotesize}
+%	  {\footnotesize Este texto fue escrito con tamaño footnotesize}
+
+%	  \subsubsection{Tamaño small}
+% 	 {\small Este texto fue escrito con tamaño small}
+
+%	  \subsubsection{Tamaño normalsize}
+%	  {\normalsize Este texto fue escrito con tamaño normalsize}
+
+%	  \subsubsection{large}
+% 	 {\large Este texto fue escrito con tamaño large}
+
+% 	 \subsubsection{Tamaño Large}
+%	  {\Large Texto con tamaño Large}
+
+% 	 \subsubsection{Tamaño LARGE}
+%	  {\LARGE Este es tamaño LARGE}
+
+% 	 \subsubsection{Tamaño huge}
+%	  {\huge Este tamaño}
+
+%	  \subsubsection{Tamaño Huge}
+% 	 {\Huge Este tamaño}
+
+%	\vspace{1cm}
+
+%     \subsection{Enfatizando texto}
+	
+%	\subsubsection{Negrita}
+%	\textbf{Texto en negrita}
+
+%	\subsubsection{Itálica}
+%	\textit{Itálica o cursiva enfatizar}
+
+%	\subsubsection{Tipeo}
+%	\texttt{En formato de tipeo}
+
+%	\subsubsection{En mayúsculas}
+%	\uppercase{Mayúsculas}
+
+%	\subsubsection{Subrayado}
+%	\underline{Texto subrayado}
+
+%	\subsubsection{A color}
+%	Escribimos con rojo la palabra \textcolor{red}{documento}.
+
+%	\subsubsection{Resaltado}
+%	Resaltamos la palabra \colorbox{Orange}{documento}.
+
+%	\subsubsection{Comando extra}
+%	Para escribir textualmente un comando, como por ejemplo \verb+\textbf{}+
+
+%     \subsection{Alineamiento de texto}
+
+%	\subsubsection{Texto a la izquierda}
+%	\begin{flushleft}
+%	\lipsum[2]
+%	\end{flushleft}
+
+%	\subsubsection{Texto a la derecha}
+%	\begin{flushright}
+%	\lipsum[2]
+%	\end{flushright}
+
+%	\subsubsection{Texto al centro}
+%	\begin{center}
+%	\lipsum[2]
+%	\end{center}
+
+%	\subsubsection{ Otros comandos}
+%	{\centering 
+%	Oración al centro.
+
+%	}
+%	{\raggedright
+%	Oración a la izquierda
+
+%	}
+%	{\raggedleft
+%	Oración a la derecha
+
+%	}
+
+%	\subsection{A dos columnas}
+%	\begin{multicols}{2}  %Tener activado el paquete multicol
+%	\lipsum[2]
+%	\end{multicols}
+
+%	\subsubsection{Separar párrafos}
+
+%	\lipsum[2]\\
+
+%	\noindent  % Para borrar sangrías. Para hacer sangrías: \indent
+%	\lipsum[2]
+
+%     \subsection{Hacer listados}
+%	\subsubsection{Ítems}
+%	\begin{itemize}
+%	\item Primera oración.
+%	\item Segunda oración.
+%	\item Tercera oración.
+%	\end{itemize}
+	
+%	\subsubsection{Enumeración}
+%	\begin{enumerate}
+%	\item Primer elemento.
+%	\item Segundo elemento.
+%	\item Tercer elemento.
+%	\end{enumerate}
+
+
+%  \section{Escritura de ecuaciones}
+
+%	\subsection{Entorno \textit{equation}}
+%	\begin{equation}
+%	\label{Ecuación 1}
+%	a+b=5
+%	\end{equation}
+
+%	\begin{equation*}
+%	a+b=5
+%	\end{equation*}
+
+%	\subsection{Ecuación en texto}
+%	En esta línea ingresamos la ecuación $a+b=5$.\\
+	
+%	\noindent
+%	Teorema de Pitágoras: $a^{2}+b^2=c^2$ \\
+
+%	\noindent
+%	Proporciones:  $\frac{a}{b} = \dfrac{c}{d} = \sqrt{\dfrac{a \times c}{b \cdot d}}$\\
+
+%	\noindent
+%	Energía cinética: $E_{cin\acute etica}=\dfrac{1}{2} m v^2$\\
+
+%	\noindent
+%	Energía potencial: $E_{potencial}=mgh$\\
+
+%	\noindent
+%	Componente en el eje x de la ecuación de Navier-Stokes :\[
+%	\rho \left( V_{x} \dfrac{ \partial V_x }{ \partial x } + V_{y} \dfrac{ \partial V_x }{ \partial y } + 
+%             V_{z} \dfrac{ \partial  V_x }{ \partial z } + \dfrac{ \partial V_x }{ \partial t } \right) =
+%	\dfrac{ \partial { \sigma } }{ \partial x } + \mu \Delta_2 V_x + \rho g_x
+%	\]
+
+%	\noindent
+%	Definición de velocidad: $\vec{V}=\dfrac{d \vec{x}}{dt}$\\
+ 
+%  \newpage
+
+%  \section{Insertar imagen}
+
+%	\subsection{Entorno \textit{figure}}
+
+%	\lipsum[1]
+%	\begin{figure} [h!]  % h: insertar aquí , b: al fondo , t: arriba, p: en siguiente página , ! : para forzar
+%	\centering  % \raggedright  \raggedleft   \hspace{}
+%	\includegraphics[scale=0.2]{Figuras/figura.png} % width=  , height =   , angle=  
+%	\caption{Primera figura del documento}
+%	\label{Figura 1}
+%	\end{figure}
+
+%	\newpage
+
+%	\subsection{Entorno \textit{wrapfigure}}
+
+%	\begin{wrapfigure}{r}{0.3\textwidth}
+%	\includegraphics[scale=0.1]{Figuras/figura.png}
+%	\caption{Segunda figura}
+%	\end{wrapfigure}
+
+%	\lipsum[1]
+
+%  \section{Hacer referencias}
+
+%  Para hacer referencias se usa el comando \verb+\ref{}+. Por ejemplo, con ese comando estamos haciendo
+%referencia de la Sección \ref{Sección 1}, la Ecuación \ref{Ecuación 1} y la Figura \ref{Figura 1}. Muchos 
+%artículos han sido escritos con latex.
+
+
+
+%\end{document}
