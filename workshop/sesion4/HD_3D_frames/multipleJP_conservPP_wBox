@@ -1,0 +1,392 @@
+#!/usr/bin/perl
+
+$camx = 0.0 ; #27.5/2 ;        # !!! Camera position x in general =gCDimx/2
+$camy = 0.0 ; #27.5/2 ;        # !!! Camera position y in general =gCDimy/2
+$camz = 38.0;        # !!! Camera position z, ya set up with 20 !no se
+$angle = 40;            # !!! Width of camera image, if increases you zoom out
+$HalfBoxLX = 29.6/2 ;  # Half of simulation box lenght x-direction
+$HalfBoxLY = 29.6/2 ;  # Half of simulation box lenght y-direction
+$HalfBoxLZ = 29.6/2 ;  # Half of simulation box lenght z-direction (in particle radius units)
+$RCylindBox = 0.2 ;     # radius of cylinders forming the simulation box
+
+$width = 100;     # Frame thickness, before 2, ya set up wit 4
+$falloff = 0;   # Transparency
+
+# Lighting
+ $lightx = 20; # !! before 8   
+ $lighty = 20; # !! before 8
+ $lightz = 2 * $camz; # !! before 3
+ $intensity = 1.05; # !! before 1.25
+
+ $right = 1.0; # !!! The width of the cell 1.5
+ $imageheight = 680; # original was 240, Ubaldo 380, 680,
+ #$imagewidth = 0.8 * $right * 4 / 3 * $imageheight; # !!! Original setting by Jim 0.8
+
+ $imagewidth =  $right * $imageheight;
+
+ $radRat = 1; # !!! The ratio of radii
+ #$colorPP = Blue; #implemented by Ronal
+
+# Notes:
+# To change background color: find Background color and change the actual color
+
+
+open( bath, "<../bath.out" ) or die "Couldn't open file";
+open( target, "<../trac.out" ) or die "Couldn't open file";
+
+open( output, ">00001.pov" ) or die "Couldn't open file";
+
+
+print output "#include \"colors.inc\"\n\n";
+print output "background { color Black }\n\n";    
+
+print output "global_settings { max_trace_level 256 }\n\n";
+print output "global_settings { ambient_light color $intensity * White }\n\n";
+
+print output "camera { \n";
+print output " orthographic\n";
+print output " location < 38, 30, $camz > \n";
+print output " look_at < $camx, $camy, 0 > \n ";
+print output " up 1 \n";
+print output " right $right\n";
+print output " angle $angle\n";
+print output "}\n\n";
+print output "light_source { \n";
+print output " < $lightx, $lighty, $lightz > \n";
+print output " color White \n";
+print output "}\n\n";
+
+
+@bathin = ();
+
+@bathin = <bath>;
+
+@targetin = ();
+
+@targetin = <target>;
+
+$count = 0;
+
+@tx1 = ();
+@ty1 = ();
+@tz1 = ();
+
+$lineflag = 0;
+foreach $line (@targetin)   # tergetin is equivalent to trac.out
+{
+	chop $line;
+	
+	if ( !( $line =~ m\---\ ) )
+	{
+	
+		if ( $lineflag == 0 )
+		{
+			( $blah, $tx1[ $count ], $tz1[ $count ], $ty1[ $count ] ) = split( / +/, $line );  # Trac particle
+		} elsif( $lineflag == 1 )
+		{
+			( $blah, $dtx1[ $count ], $dtz1[ $count ], $dty1[ $count ] ) = split( / +/, $line ); # Trac particle
+		} 
+
+		$lineflag++;
+		if ( $lineflag == 2 )
+		{
+			$lineflag = 0;
+			$count++;
+		}
+	}
+}
+
+
+$count = 0;
+$scenecount = 1;
+$prefactor = '000';
+
+foreach $line (@bathin)
+{
+	chop $line;
+	
+	if ( $line != '---' )
+	{
+		( $blah, $x1, $z1, $y1, $dxx, $dzz, $dyy ) = split( / +/, $line ); # bath particle
+	    
+	                $dz1 = $z1 - $tz1[ $count ];
+
+                        $density = 1. - exp( -1 * $falloff * $dz1 * $dz1 / $width );
+
+        	if ( abs( $z1 - $tz1[ $count ] ) < $width )
+		{
+			$dz11 = $z1 - $tz1[ $count ];
+
+			$density = 1. - exp( -1 * $falloff * $dz11 * $dz11 / $width );
+	
+			print output " sphere { \n";
+			print output "  <$x1,$y1,$z1>, 1 \n";
+			print output "  texture { \n ";
+			print output "   pigment { \n"; 
+			print output "   color White \n";          # HS color of bath particle, color BrightGold
+			print output "   transmit $density \n";
+			print output "  }\n ";
+			print output "  finish { \n";
+			print output "   ambient 0.1\n";
+			print output "   diffuse 0.9\n";
+                        print output "   phong 0.5\n";  #to set lighting of a sphere (small white circle on the center)
+         		print output "  }\n}\n}\n\n\n";
+
+                         $x1 = $x1 + 0.0001 * $dxx;
+                         $y1 = $y1 + 0.0001 * $dyy;
+                         $z1 = $z1 + 0.0001 * $dzz;
+			
+            print output " sphere { \n";
+			print output "  <$x1,$y1,$z1>, 1 \n";
+			print output "  texture { \n ";
+			print output "   pigment { \n"; 
+			print output "   color Blue \n";      # SW color of bath particle
+			print output "   transmit $density \n";
+			print output "  }\n ";
+			print output "  finish { \n";
+			print output "   ambient 0.1\n";
+			print output "   diffuse 0.9\n";
+                        print output "   phong 0.5\n";  #to set lighting of a sphere (small white circle on the center)
+			print output "  }\n}\n}\n\n\n";
+
+		}
+	}
+	else
+	{
+		$x1 = $tx1[$count];
+		$y1 = $ty1[$count];
+		$z1 = $tz1[$count];
+        		$dx1 = $dtx1[$count];
+        		$dy1 = $dty1[$count];
+        		$dz1 = $dtz1[$count];
+
+	
+		print output " sphere { \n";
+		print output "  <$x1,$y1,$z1>, $radRat \n";
+		print output "  texture { \n ";
+		print output "   pigment { \n"; 
+		print output "   color White \n";       # HS color of trac particle
+		print output "   transmit $density \n";
+		print output "  }\n ";
+		print output "  finish { \n";
+		print output "   ambient 0.1\n";
+		print output "   diffuse 0.9\n";
+	        print output "   phong 0.5\n";  #to set lighting of a sphere (small white circle on the center)
+         	print output "  }\n }\n}\n\n\n";
+
+
+                $x1 = $x1 + 0.0001 * $dx1;
+                $y1 = $y1 + 0.0001 * $dy1;
+                $z1 = $z1 + 0.0001 * $dz1;
+			
+                print output " sphere { \n";
+		print output "  <$x1,$y1,$z1>, $radRat \n";
+		print output "  texture { \n ";
+		print output "   pigment { \n"; 
+		print output "   color Blue \n";          # SW color of trac particle
+		print output "   transmit $density \n";
+		print output "  }\n ";
+		print output "  finish { \n";
+		print output "   ambient 0.1\n";
+		print output "   diffuse 0.9\n";
+		print output "   phong 0.5\n";  #to set lighting of a sphere (small white circle on the center)
+                print output "  }\n}\n}\n\n\n";
+		
+               # include a simulation box --- Rdlcruz
+                print output " cylinder { \n";
+                print output "  <-$HalfBoxLX,-$HalfBoxLY,-$HalfBoxLZ>, < $HalfBoxLX, -$HalfBoxLY, -$HalfBoxLZ >, $RCylindBox \n";
+                print output "  texture { \n ";
+                print output "   pigment { \n";
+                print output "   color Red \n";
+                print output "   transmit 0 \n";
+                print output "  }\n ";
+                print output "  finish { \n";
+                print output "   ambient 0.4\n";
+                print output "   diffuse 0.6\n";
+                print output "  }\n}\n}\n\n\n";      
+
+                print output " cylinder { \n";
+                print output "  < -$HalfBoxLX,-$HalfBoxLY,$HalfBoxLZ >, < $HalfBoxLX,-$HalfBoxLY,$HalfBoxLZ >, $RCylindBox \n";
+                print output "  texture { \n ";
+                print output "   pigment { \n";
+                print output "   color Red \n";
+                print output "   transmit 0 \n";
+                print output "  }\n ";
+                print output "  finish { \n";
+                print output "   ambient 0.4\n";
+                print output "   diffuse 0.6\n";
+                print output "  }\n}\n}\n\n\n";
+
+                print output " cylinder { \n";
+                print output "  < -$HalfBoxLX,$HalfBoxLY,$HalfBoxLZ >, < $HalfBoxLX,$HalfBoxLY,$HalfBoxLZ >, $RCylindBox \n";
+                print output "  texture { \n ";
+                print output "   pigment { \n";
+                print output "   color Red \n";
+                print output "   transmit 0 \n";
+                print output "  }\n ";
+                print output "  finish { \n";
+                print output "   ambient 0.4\n";
+                print output "   diffuse 0.6\n";
+                print output "  }\n}\n}\n\n\n";               
+
+                print output " cylinder { \n";
+                print output "  < -$HalfBoxLX,$HalfBoxLY,-$HalfBoxLZ >, < $HalfBoxLX,$HalfBoxLY,-$HalfBoxLZ >, $RCylindBox \n";
+                print output "  texture { \n ";
+                print output "   pigment { \n";
+                print output "   color Red \n";
+                print output "   transmit 0 \n";
+                print output "  }\n ";
+                print output "  finish { \n";
+                print output "   ambient 0.4\n";
+                print output "   diffuse 0.6\n";
+                print output "  }\n}\n}\n\n\n";
+
+                print output " cylinder { \n";
+                print output "  <-$HalfBoxLX,-$HalfBoxLY,-$HalfBoxLZ>, <-$HalfBoxLX,-$HalfBoxLY,$HalfBoxLZ>, $RCylindBox \n";
+                print output "  texture { \n ";
+                print output "   pigment { \n";
+                print output "   color Red \n";
+                print output "   transmit 0 \n";
+                print output "  }\n ";
+                print output "  finish { \n";
+                print output "   ambient 0.4\n";
+                print output "   diffuse 0.6\n";
+                print output "  }\n}\n}\n\n\n";
+
+                print output " cylinder { \n";
+                print output "  <$HalfBoxLX,-$HalfBoxLY,-$HalfBoxLZ>, <$HalfBoxLX,-$HalfBoxLY,$HalfBoxLZ>, $RCylindBox \n";
+                print output "  texture { \n ";
+                print output "   pigment { \n";
+                print output "   color Red \n";
+                print output "   transmit 0 \n";
+                print output "  }\n ";
+                print output "  finish { \n";
+                print output "   ambient 0.4\n";
+                print output "   diffuse 0.6\n";
+                print output "  }\n}\n}\n\n\n";                
+
+                print output " cylinder { \n";
+                print output "  <$HalfBoxLX,$HalfBoxLY,-$HalfBoxLZ>, <$HalfBoxLX,$HalfBoxLY,$HalfBoxLZ>, $RCylindBox \n";
+                print output "  texture { \n ";
+                print output "   pigment { \n";
+                print output "   color Red \n";
+                print output "   transmit 0 \n";
+                print output "  }\n ";
+                print output "  finish { \n";
+                print output "   ambient 0.4\n";
+                print output "   diffuse 0.6\n";
+                print output "  }\n}\n}\n\n\n";
+
+                print output " cylinder { \n";
+                print output "  <-$HalfBoxLX,$HalfBoxLY,-$HalfBoxLZ>, <-$HalfBoxLX,$HalfBoxLY,$HalfBoxLZ>, $RCylindBox \n";
+                print output "  texture { \n ";
+                print output "   pigment { \n";
+                print output "   color Red \n";
+                print output "   transmit 0 \n";
+                print output "  }\n ";
+                print output "  finish { \n";
+                print output "   ambient 0.4\n";
+                print output "   diffuse 0.6\n";
+                print output "  }\n}\n}\n\n\n";
+
+                print output " cylinder { \n";
+                print output "  <$HalfBoxLX,-$HalfBoxLY,$HalfBoxLZ>, <$HalfBoxLX,$HalfBoxLY,$HalfBoxLZ>, $RCylindBox \n";
+                print output "  texture { \n ";
+                print output "   pigment { \n";
+                print output "   color Red \n";
+                print output "   transmit 0 \n";
+                print output "  }\n ";
+                print output "  finish { \n";
+                print output "   ambient 0.4\n";
+                print output "   diffuse 0.6\n";
+                print output "  }\n}\n}\n\n\n";
+
+                print output " cylinder { \n";
+                print output "  <$HalfBoxLX,-$HalfBoxLY,-$HalfBoxLZ>, <$HalfBoxLX,$HalfBoxLY,-$HalfBoxLZ>, $RCylindBox \n";
+                print output "  texture { \n ";
+                print output "   pigment { \n";
+                print output "   color Red \n";
+                print output "   transmit 0 \n";
+                print output "  }\n ";
+                print output "  finish { \n";
+                print output "   ambient 0.4\n";
+                print output "   diffuse 0.6\n";
+                print output "  }\n}\n}\n\n\n";
+
+                print output " cylinder { \n";
+                print output "  <-$HalfBoxLX,-$HalfBoxLY,$HalfBoxLZ>, <-$HalfBoxLX,$HalfBoxLY,$HalfBoxLZ>, $RCylindBox \n";
+                print output "  texture { \n ";
+                print output "   pigment { \n";
+                print output "   color Red \n";
+                print output "   transmit 0 \n";
+                print output "  }\n ";
+                print output "  finish { \n";
+                print output "   ambient 0.4\n";
+                print output "   diffuse 0.6\n";
+                print output "  }\n}\n}\n\n\n";
+
+                print output " cylinder { \n";
+                print output "  <-$HalfBoxLX,-$HalfBoxLY,-$HalfBoxLZ>, <-$HalfBoxLX,$HalfBoxLY,-$HalfBoxLZ>, $RCylindBox \n";
+                print output "  texture { \n ";
+                print output "   pigment { \n";
+                print output "   color Red \n";
+                print output "   transmit 0 \n";
+                print output "  }\n ";
+                print output "  finish { \n";
+                print output "   ambient 0.4\n";
+                print output "   diffuse 0.6\n";
+                print output "  }\n}\n}\n\n\n";
+
+
+                $count++;
+		
+		close( output );
+		
+		system( "povray -I0$prefactor$scenecount.pov +A +w$imagewidth +h$imageheight +FN8 -D");
+		
+		system( "rm 0$prefactor$scenecount.pov" );
+		
+		$scenecount++;
+		
+		if ( $scenecount < 10 ) {
+			$prefactor = '000';
+		}
+		elsif ( $scenecount < 100 ) {
+			$prefactor = '00';
+		}
+		elsif ( $scenecount < 1000 ) {
+			$prefactor = '0';
+		}
+		else
+		{
+			$prefactor = '';
+		}
+		
+		open( output, ">0$prefactor$scenecount.pov" ) or die "Couldn't open file";
+
+		print output "#include \"colors.inc\"\n\n";
+		print output "background { color Black }\n\n";  
+
+		print output "global_settings { max_trace_level 256 }\n\n";
+		print output "global_settings { ambient_light color $intensity * White }\n\n";
+
+		print output "camera { \n";
+		print output " orthographic\n";
+		print output " location < 38, 30, $camz > \n";
+		print output " look_at < $camx, $camy, 0 > \n ";
+		print output " up 1 \n";
+		print output " right $right\n";
+		print output " angle $angle\n";
+		print output "}\n\n";
+		print output "light_source { \n";
+		print output " < $lightx, $lighty, $lightz > \n";
+		print output " color White \n";
+		print output "}\n\n";
+	}
+}
+
+close( bath );
+close( target );
+close( output );
+
+system( "rm 0$prefactor$scenecount.pov" );
